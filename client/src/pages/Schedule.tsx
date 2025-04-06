@@ -30,7 +30,7 @@ export default function Schedule() {
     // Create the interview request payload
     const payload = {
       recipientEmail: "anishawasthi2024@gmail.com",
-      candidateName: "John Doe",
+      candidateName: "Anish Awasthi",
       interviewerName: interviewers[interviewer as keyof typeof interviewers].split(' (')[0],
       interviewDate: "2025-04-15", // Using fixed date for demo
       interviewTime: "14:00",
@@ -79,7 +79,7 @@ export default function Schedule() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Schedule Interview</h1>
           <p className="mt-2 text-lg text-gray-600 max-w-3xl mx-auto">
-            Schedule an interview with John Doe for the Senior Software Engineer position
+            Schedule an interview with Anish Awasthi for the Senior Software Engineer position
           </p>
         </div>
 

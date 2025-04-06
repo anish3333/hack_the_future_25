@@ -319,7 +319,7 @@ export default function DiscussionWorld() {
   const participants = [
     {
       id: 1,
-      name: "John Doe",
+      name: "Anish Awasthi",
       role: "Candidate",
       position: [0, 0, -2.5],
       color: "#4F46E5",

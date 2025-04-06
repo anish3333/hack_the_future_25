@@ -54,7 +54,7 @@ export default function EmailPreview({
             </div>
           </div>
           <div className="p-4 bg-white">
-            <p className="text-gray-700 text-sm">Dear John Doe,</p>
+            <p className="text-gray-700 text-sm">Dear Anish Awasthi,</p>
             <p className="text-gray-700 text-sm mt-4">
               Thank you for your application for the Senior Software Engineer position at TechCorp.
               We would like to invite you to an interview to discuss your qualifications and experience in more detail.

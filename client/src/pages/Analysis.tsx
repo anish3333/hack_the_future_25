@@ -17,7 +17,7 @@ import {
 const candidateScores = [
   {
     id: 1,
-    name: "John Doe",
+    name: "Anish Awasthi",
     avatar: "/placeholder.svg",
     role: "Candidate",
     communication: 85,
@@ -233,13 +233,13 @@ export default function Analysis() {
           <CardContent className="space-y-4">
             <p className="text-gray-700">
               Based on the group discussion analysis, both candidates demonstrated strong technical skills and teamwork abilities.
-              However, John Doe showed superior technical knowledge and communication skills, making him the stronger candidate for the
+              However, Anish Awasthi showed superior technical knowledge and communication skills, making him the stronger candidate for the
               Senior Software Engineer position.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
               <div className="p-4 bg-green-50 rounded-lg border border-green-100">
                 <h3 className="font-medium text-green-800">Recommend for Hire</h3>
-                <p className="text-sm text-green-700 mt-2">John Doe - Senior Software Engineer</p>
+                <p className="text-sm text-green-700 mt-2">Anish Awasthi - Senior Software Engineer</p>
                 <div className="flex justify-between items-center mt-4">
                   <p className="text-xs text-green-700">Overall Score: 82%</p>
                   <Button variant="outline" size="sm" className="text-green-700 bg-white border-green-200 hover:bg-green-50">

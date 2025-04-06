@@ -50,7 +50,7 @@ export default function MatchResults() {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold text-gray-900">John Doe</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Anish Awasthi</h2>
               <p className="text-gray-600">Applying for: Senior Software Engineer</p>
             </div>
             <div className="flex flex-col items-center">
@@ -154,7 +154,7 @@ export default function MatchResults() {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-gray-700">
-                    Based on our AI analysis, John Doe is a strong candidate for the Senior Software Engineer position. 
+                    Based on our AI analysis, Anish Awasthi is a strong candidate for the Senior Software Engineer position. 
                     The candidate has relevant experience in most of the required technologies and skills. 
                     Particularly strong in React, TypeScript, and cloud technologies.
                   </p>

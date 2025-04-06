@@ -24,7 +24,7 @@ export default function GroupDiscussion() {
   const participants = [
     {
       id: 1,
-      name: "John Doe",
+      name: "Anish Awasthi",
       role: "Candidate",
       avatar: "/placeholder.svg",
       isActive: true,

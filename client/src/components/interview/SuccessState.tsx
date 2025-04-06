@@ -23,7 +23,7 @@ export default function SuccessState({
       </div>
       <h3 className="text-xl font-medium text-gray-900 mb-2">Interview Scheduled!</h3>
       <p className="text-gray-600 text-center mb-4">
-        You have successfully scheduled a {interviewType} interview with John Doe for {selectedDate} at {selectedTime}.
+        You have successfully scheduled a {interviewType} interview with Anish Awasthi for {selectedDate} at {selectedTime}.
       </p>
       <div className="flex space-x-4">
         <Link to="/group-discussion">

@@ -123,7 +123,7 @@ export default function Upload() {
                     {file ? (
                       <>
                         <div className="p-4 bg-gray-50 rounded-lg mb-4">
-                          <h4 className="text-xl font-bold">John Doe</h4>
+                          <h4 className="text-xl font-bold">Anish Awasthi</h4>
                           <p className="text-gray-600">Senior Software Engineer</p>
                           <p className="text-sm text-gray-500">john.doe@example.com | (123) 456-7890</p>
                         </div>
