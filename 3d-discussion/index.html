@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Discussion World</title>
+  <style>
+    body { 
+      margin: 0; 
+      overflow: hidden; 
+      background-color: #1a1a2e;
+    }
+    #info {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-family: Arial, sans-serif;
+      pointer-events: none;
+    }
+    .speaking-indicator {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 4px;
+      background: #4CAF50;
+      border-radius: 2px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+    .hand-raised {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #f8d62b;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">3D Discussion World</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Initialize Three.js scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1a2e);
+    
+    // Create camera
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 1.6, 3.5);
+    
+    // Create renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+    
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+    scene.add(ambientLight);
+    
+    // Add directional light (like sun)
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+    
+    // Add spotlight for dramatic effect
+    const spotlight = new THREE.SpotLight(0x4b6cb7, 1);
+    spotlight.position.set(0, 8, 0);
+    spotlight.angle = Math.PI / 4;
+    spotlight.penumbra = 0.1;
+    spotlight.decay = 2;
+    spotlight.distance = 20;
+    spotlight.castShadow = true;
+    scene.add(spotlight);
+    
+    // Create a circular table
+    const tableGeometry = new THREE.CylinderGeometry(1.5, 1.5, 0.1, 32);
+    const tableMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x2c3e50,
+      specular: 0x333333,
+      shininess: 30
+    });
+    const table = new THREE.Mesh(tableGeometry, tableMaterial);
+    table.position.y = 0.75;
+    table.receiveShadow = true;
+    scene.add(table);
+    
+    // Add table edge
+    const tableEdgeGeometry = new THREE.TorusGeometry(1.5, 0.05, 16, 100);
+    const tableEdgeMaterial = new THREE.MeshPhongMaterial({ color: 0x34495e });
+    const tableEdge = new THREE.Mesh(tableEdgeGeometry, tableEdgeMaterial);
+    tableEdge.position.y = 0.8;
+    tableEdge.rotation.x = Math.PI / 2;
+    tableEdge.castShadow = true;
+    scene.add(tableEdge);
+    
+    // Create a floor
+    const floorGeometry = new THREE.PlaneGeometry(20, 20);
+    const floorMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x303952,
+      side: THREE.DoubleSide
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = Math.PI / 2;
+    floor.position.y = 0;
+    floor.receiveShadow = true;
+    scene.add(floor);
+    
+    // Add some background elements for depth
+    function addBackgroundElement(x, z, scale, color) {
+      const geometry = new THREE.BoxGeometry(1, 2, 1);
+      const material = new THREE.MeshPhongMaterial({ color });
+      const element = new THREE.Mesh(geometry, material);
+      element.position.set(x, 1, z);
+      element.scale.set(scale, scale, scale);
+      element.castShadow = true;
+      scene.add(element);
+    }
+    
+    // Add some decorative elements
+    addBackgroundElement(-5, -5, 3, 0x3498db);
+    addBackgroundElement(6, -4, 2, 0x2ecc71);
+    addBackgroundElement(5, 5, 4, 0x9b59b6);
+    addBackgroundElement(-6, 4, 2.5, 0xe74c3c);
+    
+    // Participant data with different avatar styles
+    const participants = [
+      { id: 1, name: "John Doe", role: "Candidate", color: 0xe74c3c, hairColor: 0x8b4513, shirtColor: 0x3498db, speaking: false, handRaised: false, style: 'business' },
+      { id: 2, name: "Michael Chen", role: "Candidate", color: 0xf5b041, hairColor: 0x1a1a1a, shirtColor: 0x27ae60, speaking: false, handRaised: false, style: 'casual' },
+      { id: 3, name: "Emma Wilson", role: "Candidate", color: 0xfbeee6, hairColor: 0xcd853f, shirtColor: 0x9b59b6, speaking: false, handRaised: false, style: 'formal' },
+      { id: 4, name: "Sarah Johnson", role: "Candidate", color: 0xd2b4de, hairColor: 0x8e44ad, shirtColor: 0xf7dc6f, speaking: false, handRaised: false, style: 'tech' },
+      { id: 5, name: "David Kim", role: "Candidate", color: 0xa9dfbf, hairColor: 0x212f3d, shirtColor: 0xe74c3c, speaking: false, handRaised: false, style: 'creative' },
+      { id: 6, name: "Lisa Patel", role: "Candidate", color: 0xfef9e7, hairColor: 0x1c2833, shirtColor: 0x2e86c1, speaking: false, handRaised: false, style: 'casual' }
+    ];
+    
+    // Avatar creation function
+    function createAvatar(participant) {
+      const container = new THREE.Group();
+      
+      // Create head with better geometry
+      const headGeometry = new THREE.SphereGeometry(0.15, 32, 32);
+      const headMaterial = new THREE.MeshPhongMaterial({ 
+        color: participant.color,
+        specular: 0x111111,
+        shininess: 20
+      });
+      const head = new THREE.Mesh(headGeometry, headMaterial);
+      head.position.y = 0.15;
+      head.castShadow = true;
+      container.add(head);
+      
+      // Add hair based on style
+      let hairGeometry;
+      if (participant.style === 'business' || participant.style === 'formal') {
+        hairGeometry = new THREE.SphereGeometry(0.16, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+      } else if (participant.style === 'tech') {
+        hairGeometry = new THREE.BoxGeometry(0.2, 0.05, 0.2);
+      } else if (participant.style === 'creative') {
+        hairGeometry = new THREE.ConeGeometry(0.15, 0.1, 32);
+      } else {
+        hairGeometry = new THREE.SphereGeometry(0.16, 32, 16, 0, Math.PI * 2, 0, Math.PI / 3);
+      }
+      
+      const hairMaterial = new THREE.MeshPhongMaterial({ color: participant.hairColor });
+      const hair = new THREE.Mesh(hairGeometry, hairMaterial);
+      hair.position.y = 0.23;
+      if (participant.style === 'creative') {
+        hair.position.y = 0.28;
+      }
+      hair.castShadow = true;
+      container.add(hair);
+      
+      // Add eyes
+      const eyeGeometry = new THREE.SphereGeometry(0.03, 16, 16);
+      const eyeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+      const pupilGeometry = new THREE.SphereGeometry(0.015, 16, 16);
+      const pupilMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+      
+      // Left eye
+      const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      leftEye.position.set(-0.07, 0.18, 0.12);
+      container.add(leftEye);
+      
+      const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+      leftPupil.position.set(-0.07, 0.18, 0.15);
+      container.add(leftPupil);
+      
+      // Right eye
+      const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      rightEye.position.set(0.07, 0.18, 0.12);
+      container.add(rightEye);
+      
+      const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+      rightPupil.position.set(0.07, 0.18, 0.15);
+      container.add(rightPupil);
+      
+      // Add torso/shirt based on style
+      let torsoGeometry;
+      if (participant.style === 'business') {
+        torsoGeometry = new THREE.BoxGeometry(0.3, 0.4, 0.2);
+      } else if (participant.style === 'formal') {
+        torsoGeometry = new THREE.CylinderGeometry(0.17, 0.22, 0.4, 8);
+      } else if (participant.style === 'tech') {
+        torsoGeometry = new THREE.BoxGeometry(0.35, 0.35, 0.2);
+      } else {
+        torsoGeometry = new THREE.CylinderGeometry(0.15, 0.2, 0.4, 16);
+      }
+      
+      const torsoMaterial = new THREE.MeshPhongMaterial({ 
+        color: participant.shirtColor,
+        specular: 0x222222,
+        shininess: 10
+      });
+      
+      const torso = new THREE.Mesh(torsoGeometry, torsoMaterial);
+      torso.position.y = -0.15;
+      torso.castShadow = true;
+      container.add(torso);
+      
+      // Add a detail element to make each avatar more unique
+      if (participant.style === 'business') {
+        // Add tie
+        const tieGeometry = new THREE.CylinderGeometry(0.03, 0.05, 0.25, 4);
+        const tieMaterial = new THREE.MeshPhongMaterial({ color: 0xe74c3c });
+        const tie = new THREE.Mesh(tieGeometry, tieMaterial);
+        tie.position.set(0, -0.1, 0.11);
+        tie.rotation.x = Math.PI / 10;
+        container.add(tie);
+      } else if (participant.style === 'formal') {
+        // Add collar
+        const collarGeometry = new THREE.TorusGeometry(0.08, 0.02, 8, 16, Math.PI);
+        const collarMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        const collar = new THREE.Mesh(collarGeometry, collarMaterial);
+        collar.position.set(0, 0.02, 0.08);
+        collar.rotation.x = Math.PI / 2;
+        container.add(collar);
+      } else if (participant.style === 'tech') {
+        // Add glasses
+        const glassesGeometry = new THREE.BoxGeometry(0.2, 0.04, 0.02);
+        const glassesMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+        const glasses = new THREE.Mesh(glassesGeometry, glassesMaterial);
+        glasses.position.set(0, 0.18, 0.12);
+        container.add(glasses);
+      } else if (participant.style === 'creative') {
+        // Add scarf
+        const scarfGeometry = new THREE.BoxGeometry(0.25, 0.06, 0.06);
+        const scarfMaterial = new THREE.MeshPhongMaterial({ color: 0x9b59b6 });
+        const scarf = new THREE.Mesh(scarfGeometry, scarfMaterial);
+        scarf.position.set(0, 0.02, 0.07);
+        scarf.rotation.x = Math.PI / 8;
+        container.add(scarf);
+      }
+      
+      // Add arms
+      const armGeometry = new THREE.CylinderGeometry(0.04, 0.04, 0.3, 8);
+      const armMaterial = new THREE.MeshPhongMaterial({ color: participant.shirtColor });
+      
+      // Left arm
+      const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+      leftArm.position.set(-0.2, -0.15, 0);
+      leftArm.rotation.z = Math.PI / 8;
+      leftArm.castShadow = true;
+      container.add(leftArm);
+      
+      // Right arm
+      const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+      rightArm.position.set(0.2, -0.15, 0);
+      rightArm.rotation.z = -Math.PI / 8;
+      rightArm.castShadow = true;
+      container.add(rightArm);
+      
+      return container;
+    }
+    
+    // Create participant avatars
+    const avatars = [];
+    const radius = 1.8; // Distance from center of table
+    
+    participants.forEach((participant, index) => {
+      // Calculate position in a circle
+      const angle = (index / participants.length) * Math.PI * 2;
+      const x = Math.sin(angle) * radius;
+      const z = Math.cos(angle) * radius;
+      
+      // Create avatar
+      const avatar = createAvatar(participant);
+      avatar.position.set(x, 1.3, z);
+      avatar.lookAt(0, 1.3, 0); // Face center
+      scene.add(avatar);
+      
+      // Create name label (using HTML overlay for better text)
+      const nameDiv = document.createElement('div');
+      nameDiv.textContent = participant.name;
+      nameDiv.style.position = 'absolute';
+      nameDiv.style.backgroundColor = '#00000080';
+      nameDiv.style.color = '#ffffff';
+      nameDiv.style.padding = '2px 5px';
+      nameDiv.style.borderRadius = '3px';
+      nameDiv.style.fontSize = '12px';
+      nameDiv.style.fontFamily = 'Arial, sans-serif';
+      nameDiv.style.whiteSpace = 'nowrap';
+      nameDiv.style.pointerEvents = 'none';
+      document.body.appendChild(nameDiv);
+      
+      // Create speaking indicator
+      const speakingDiv = document.createElement('div');
+      speakingDiv.className = 'speaking-indicator';
+      speakingDiv.style.display = 'none';
+      nameDiv.appendChild(speakingDiv);
+      
+      // Create hand raised indicator
+      const handDiv = document.createElement('div');
+      handDiv.className = 'hand-raised';
+      handDiv.textContent = '✋';
+      handDiv.style.display = 'none';
+      nameDiv.appendChild(handDiv);
+      
+      // Store avatar data for animation
+      avatars.push({
+        container: avatar,
+        participant,
+        nameDiv,
+        speakingDiv,
+        handDiv,
+        baseY: 1.3, // Base Y position for animation
+        speakingY: 0 // Speaking bobble animation offset
+      });
+    });
+    
+    // Update HTML overlays (name labels, indicators)
+    function updateOverlays() {
+      avatars.forEach(avatar => {
+        // Get screen position for this avatar
+        const vector = new THREE.Vector3();
+        avatar.container.getWorldPosition(vector);
+        vector.y += 0.3; // Adjust to be above the head
+        vector.project(camera);
+        
+        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
+        
+        // Position name label
+        avatar.nameDiv.style.transform = `translate(-50%, -100%)`;
+        avatar.nameDiv.style.left = `${x}px`;
+        avatar.nameDiv.style.top = `${y - 30}px`;
+        
+        // Update speaking indicator
+        avatar.speakingDiv.style.display = avatar.participant.speaking ? 'block' : 'none';
+        
+        // Update hand raised indicator
+        avatar.handDiv.style.display = avatar.participant.handRaised ? 'block' : 'none';
+      });
+    }
+    
+    // Simulation of discussion activity
+    function simulateActivity() {
+      // Reset all speaking statuses
+      avatars.forEach(avatar => {
+        avatar.participant.speaking = false;
+      });
+      
+      // Randomly select 1-2 participants to speak
+      const numSpeakers = Math.floor(Math.random() * 2) + 1;
+      for (let i = 0; i < numSpeakers; i++) {
+        const speakerIndex = Math.floor(Math.random() * participants.length);
+        avatars[speakerIndex].participant.speaking = true;
+      }
+      
+      // Randomly toggle hand raised status for some participants
+      if (Math.random() < 0.2) { // 20% chance to change hand status
+        const participantIndex = Math.floor(Math.random() * participants.length);
+        avatars[participantIndex].participant.handRaised = !avatars[participantIndex].participant.handRaised;
+      }
+      
+      // Schedule next activity change
+      setTimeout(simulateActivity, 3000 + Math.random() * 2000);
+    }
+    
+    // Start activity simulation
+    simulateActivity();
+    
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      // Rotate camera slowly around the scene
+      const time = Date.now() * 0.0001;
+      camera.position.x = Math.sin(time * 0.5) * 3.5;
+      camera.position.z = Math.cos(time * 0.5) * 3.5;
+      camera.lookAt(0, 1.3, 0);
+      
+      // Animate speaking participants (gentle bobbing)
+      avatars.forEach(avatar => {
+        if (avatar.participant.speaking) {
+          avatar.speakingY = Math.sin(Date.now() * 0.005) * 0.05;
+          avatar.container.position.y = avatar.baseY + avatar.speakingY;
+        } else {
+          avatar.container.position.y = avatar.baseY;
+        }
+      });
+      
+      // Update HTML overlays
+      updateOverlays();
+      
+      renderer.render(scene, camera);
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Start animation loop
+    animate();
+    
+    // Expose API for parent iframe to control
+    window.discussionWorld = {
+      setParticipantSpeaking: (id, isSpeaking) => {
+        const avatar = avatars.find(a => a.participant.id === id);
+        if (avatar) {
+          avatar.participant.speaking = isSpeaking;
+        }
+      },
+      setParticipantHandRaised: (id, isRaised) => {
+        const avatar = avatars.find(a => a.participant.id === id);
+        if (avatar) {
+          avatar.participant.handRaised = isRaised;
+        }
+      },
+      // Add more control methods as needed
+    };
+  </script>
+</body>
+</html>
